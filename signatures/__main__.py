@@ -13,6 +13,8 @@ parser.add_argument('-s', '--size', dest='size', metavar='pt', help='Size of the
 parser.add_argument('-f', '--font', dest='font', metavar='font', help='Font to use', type=str, default="arial")
 parser.add_argument('-o', '--output', dest='output', metavar='directory', help='output directory')
 parser.add_argument('-c', '--color', dest='color', metavar='color', help='set the color of the text', default='rgb(0, 0, 0)')
+parser.add_argument('-m', '--mask', dest='mask', metavar='color', help='Add a background to mask the image.')
+parser.add_argument('--format', dest='format', metavar='fmt', help='Set the format string of the numbers', default="%d")
 
 args = parser.parse_args()
 

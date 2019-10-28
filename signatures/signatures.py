@@ -3,31 +3,38 @@ from os import path
 from PIL import Image, ImageFont, ImageDraw
 
 
-def getPage(image, left, right, padding, pos, font, color, file):
+def getPage(image, left, right, file, padding, pos, font, color, mask, format):
     canvas = ImageDraw.Draw(image)
+
+    left = format % left
+    right = format % right
 
     w, h = image.size
 
     # Left Number
-    width, height = canvas.textsize(str(left), font=font)
+    width, height = canvas.textsize(left, font=font)
 
     x = padding
     y = padding
     if pos == 'bot':
         y = h - y - height
 
-    canvas.text((x, y), str(left), fill=color, font=font)
+    if mask is not None:
+        canvas.rectangle([(x, y), (x + width, y + height)], fill=mask)
+    canvas.text((x, y), left, fill=color, font=font)
 
     # Right Number
 
-    width, height = canvas.textsize(str(right), font=font)
+    width, height = canvas.textsize(right, font=font)
 
     x = w - width - padding
     y = padding
     if pos == 'bot':
         y = h - y - height
 
-    canvas.text((x, y), str(right), fill=color, font=font)
+    if mask is not None:
+        canvas.rectangle([(x, y), (x + width, y + height)], fill=mask)
+    canvas.text((x, y), right, fill=color, font=font)
 
     print(f"{file}: [{left}, {right}]")
 
@@ -36,7 +43,7 @@ def getPage(image, left, right, padding, pos, font, color, file):
     image.save(file)
 
 
-def printSignature(image, start, size, padding, pos, font, color, folder):
+def printSignature(image, start, size, folder, **kwargs):
     size *= 4
     for i in range(size // 2):
         left = start + i
@@ -48,10 +55,10 @@ def printSignature(image, start, size, padding, pos, font, color, folder):
         
         f = path.join(folder, f"{i + start // 2 + 1}.png")
 
-        getPage(image.copy(), left, right, padding, pos, font, color, f)
+        getPage(image.copy(), left, right, f, **kwargs)
 
 
-def printBook(papers, signatures, image, pos, padding, size, font, output, color, **kwargs):
+def printBook(papers, signatures, image, size, font, output, **kwargs):
     image_file = image
     font_file = font
 
@@ -79,4 +86,4 @@ def printBook(papers, signatures, image, pos, padding, size, font, output, color
         os.mkdir(output)
 
     for i in range(signatures):
-        printSignature(image, i * papers * 4 + 1, papers, padding, pos, font, color, output)
+        printSignature(image, i * papers * 4 + 1, papers, output, font=font, **kwargs)
